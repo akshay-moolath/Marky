@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Marky</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+    <div class="container"><div>
+        <script src="script.js"></script>
+            <h1>Marky Editor</h1>
+            <p class="lead">Markdown to HTML converter.</p>
+        </div>
+
+        <div class="glass">
+            <form method="post" action="/render">
+                <textarea id="md-area" name="md" placeholder="# Write your Markdown here">{{ md | default('') }}</textarea>
+
+                <div class="controls">
+                    <button type="submit">Render</button>
+                    <button type="button" onclick="clearText()">Clear</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- plain content (for debugging / optional) -->
+        <template id="plain-content">{{ plain | default('') | tojson }}</template>
+
+        <div class="glass">
+            <h3 style="margin-top:0">HTML Preview</h3>
+            <div id="preview-box" class="preview">
+    {% if corrected_text %}
+        {# corrected_text is plain text from API; convert double-newlines to paragraphs #}
+        {% for para in corrected_text.split('\n\n') %}
+            <p>{{ para | e }}</p>
+        {% endfor %}
+    {% elif corrected_html %}
+        {{ corrected_html | safe }}
+    {% elif html %}
+        {{ html | safe }}
+    {% else %}
+        <!-- empty -->
+    {% endif %}
+</div>
+            
+            <div class="download-row">
+                <button onclick="downloadPreviewText()">Download Text</button>
+                <button id="correct-btn" onclick="correctPreviewText()">Correct the Text</button>
+                <div id="spinner" class="spinner hidden" title="Processing..."></div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
