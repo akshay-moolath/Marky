@@ -4,12 +4,12 @@
     <meta charset="utf-8"/>
     <title>Marky</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
 
 </head>
 <body>
     <div class="container"><div>
-        <script src="script.js"></script>
+        <script src="{{ url_for('static', path='scripts.js') }}"></script>
             <h1>Marky Editor</h1>
             <p class="lead">Markdown to HTML converter.</p>
         </div>

@@ -53,10 +53,7 @@ function clearText(){
                 if (data.corrected_html) {
                     preview.innerHTML = data.corrected_html;
                 } else if (data.corrected_text) {
-                    // fallback: convert corrected_text (plain) to safe paragraphs while preserving existing links
-                    // We'll try a basic approach: preserve existing anchor tags, replace other text nodes.
-                    // Simpler fallback: just set textContent (links would be lost) — so prefer corrected_html on server.
-                    preview.textContent = data.corrected_text;
+                    
                 } else {
                     alert("No corrected content returned.");
                 }

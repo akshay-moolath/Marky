@@ -13,6 +13,7 @@ OPENAI_URL = "https://api.api-ninjas.com/v1/spellcheck"
 API_KEY = os.getenv("API_KEY")
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 ALLOWED_TAGS = list(bleach.sanitizer.ALLOWED_TAGS) + [
@@ -50,14 +51,14 @@ def extract_text_from_html(html: str) -> str:
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("preview.html", {"request": request, "html": ""})
+    return templates.TemplateResponse("index.html", {"request": request, "html": ""})
 
 @app.post("/render", response_class=HTMLResponse)
 async def render(request: Request, md: str = Form(...)):
     html= markdown_to_safe_html(md)
     plain = extract_text_from_html(html)
     corrected_text= spellcheck(plain)
-    return templates.TemplateResponse("preview.html", {"request": request, "html": html, "md": md,"corrected_text": corrected_text})
+    return templates.TemplateResponse("index.html", {"request": request, "html": html, "md": md,"corrected_text": corrected_text})
 
 def spellcheck(plain: str) -> str:
     if not API_KEY:
