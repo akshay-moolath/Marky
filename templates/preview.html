@@ -82,7 +82,7 @@
             gap:10px;
         }
 
-        /* 🔑 BLUE LIQUID GLASS BUTTONS - Applies blue theme to ALL standard buttons */
+        /* BLUE LIQUID GLASS BUTTONS */
         button{
             padding:10px 18px;
             border-radius:12px;
@@ -101,7 +101,7 @@
             transform: translateY(-1px);
         }
 
-        /* Primary Button (Render) - remains full dark blue */
+        /* Primary Button (Render) */
         button[type="submit"]{
             background: var(--primary-color);
             color: white;
@@ -138,6 +138,24 @@
             margin-top:12px;
             display:flex;
             gap:10px;
+            align-items:center;
+        }
+
+        .spinner {
+            display: inline-block;
+            width:18px;
+            height:18px;
+            border:3px solid rgba(0,0,0,0.12);
+            border-top-color: var(--primary-color);
+            border-radius:50%;
+            animation: spin 0.9s linear infinite;
+            margin-left:6px;
+            vertical-align:middle;
+        }
+        .hidden { display:none; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         @media(max-width:900px){
@@ -160,21 +178,34 @@
                 <div class="controls">
                     <button type="submit">Render</button>
                     <button type="button" onclick="clearText()">Clear</button>
-                    
                 </div>
             </form>
         </div>
         
+        <!-- plain content (for debugging / optional) -->
         <template id="plain-content">{{ plain | default('') | tojson }}</template>
 
         <div class="glass">
             <h3 style="margin-top:0">HTML Preview</h3>
             <div id="preview-box" class="preview">
-                {{ html | default('') | safe }} 
-            </div>
+    {% if corrected_text %}
+        {# corrected_text is plain text from API; convert double-newlines to paragraphs #}
+        {% for para in corrected_text.split('\n\n') %}
+            <p>{{ para | e }}</p>
+        {% endfor %}
+    {% elif corrected_html %}
+        {{ corrected_html | safe }}
+    {% elif html %}
+        {{ html | safe }}
+    {% else %}
+        <!-- empty -->
+    {% endif %}
+</div>
             
             <div class="download-row">
                 <button onclick="downloadPreviewText()">Download Text</button>
+                <button id="correct-btn" onclick="correctPreviewText()">Correct the Text</button>
+                <div id="spinner" class="spinner hidden" title="Processing..."></div>
             </div>
         </div>
 
@@ -184,7 +215,6 @@
         function clearText(){
             document.getElementById("md-area").value = "";
             document.getElementById("preview-box").innerHTML = "";
-            // The plain text box is gone, so no need to clear its content.
         }
 
         function downloadPreviewText(){
@@ -202,7 +232,57 @@
             document.body.removeChild(a);
         }
 
-        
+        async function correctPreviewText() {
+            const preview = document.getElementById("preview-box");
+            const html = preview.innerHTML.trim();
+            if (!html) { alert("Nothing to correct."); return; }
+
+            // show spinner and disable button
+            const spinner = document.getElementById("spinner");
+            const btn = document.getElementById("correct-btn");
+            spinner.classList.remove("hidden");
+            btn.disabled = true;
+            btn.style.opacity = 0.7;
+
+            try {
+                const response = await fetch("/correct", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ html: html })
+                });
+
+                if (!response.ok) {
+                    let msg = "Correction failed.";
+                    try {
+                        const err = await response.json();
+                        msg = err.detail || JSON.stringify(err);
+                    } catch(_) {}
+                    alert(msg);
+                    return;
+                }
+
+                const data = await response.json();
+
+                // Server should return { corrected_html: "<p>...</p>" }
+                if (data.corrected_html) {
+                    preview.innerHTML = data.corrected_html;
+                } else if (data.corrected_text) {
+                    // fallback: convert corrected_text (plain) to safe paragraphs while preserving existing links
+                    // We'll try a basic approach: preserve existing anchor tags, replace other text nodes.
+                    // Simpler fallback: just set textContent (links would be lost) — so prefer corrected_html on server.
+                    preview.textContent = data.corrected_text;
+                } else {
+                    alert("No corrected content returned.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Network or server error while correcting text.");
+            } finally {
+                spinner.classList.add("hidden");
+                btn.disabled = false;
+                btn.style.opacity = 1;
+            }
+        }
     </script>
 
 </body>

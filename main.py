@@ -1,11 +1,16 @@
-from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Request, Form ,Body
+from fastapi import HTTPException
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from bs4 import BeautifulSoup
-import markdown
-import bleach
+import bleach,os,requests,markdown
+from dotenv import load_dotenv
+import json
 
+load_dotenv()
+OPENAI_URL = "https://api.api-ninjas.com/v1/spellcheck"
+API_KEY = os.getenv("API_KEY")
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -51,8 +56,31 @@ async def index(request: Request):
 async def render(request: Request, md: str = Form(...)):
     html= markdown_to_safe_html(md)
     plain = extract_text_from_html(html)
-    return templates.TemplateResponse("preview.html", {"request": request, "html": html, "md": md})
+    corrected_text= spellcheck(plain)
+    return templates.TemplateResponse("preview.html", {"request": request, "html": html, "md": md,"corrected_text": corrected_text})
 
+def spellcheck(plain: str) -> str:
+    if not API_KEY:
+        raise RuntimeError("API Ninjas key not found in .env (NINJA_KEY).")
 
+    url = "https://api.api-ninjas.com/v1/spellcheck"
+    params = {"text": plain}
+
+    headers = {
+        "X-Api-Key": API_KEY
+    }
+
+    try:
+        resp = requests.get(url, headers=headers, params=params, timeout=20)
+    except requests.RequestException as exc:
+        raise HTTPException(status_code=502, detail=f"API Key error: {exc}")
+
+    if resp.status_code != 200:
+        raise HTTPException(status_code=502, detail=resp.text)
+
+    data = resp.json()
+
+    # `corrected` always exists in Spell Check API response
+    return data.get("corrected", plain)
 
 
