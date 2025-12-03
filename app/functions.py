@@ -37,7 +37,7 @@ def corrector(html: str) -> str:
     return str(soup)
 
 def spellcheck(plain: str) -> str:
-    url = "https://api.api-ninjas.com/v1/spellcheck"
+    url = spellcheck_URL 
     params = {"text": plain}
 
     headers = {
