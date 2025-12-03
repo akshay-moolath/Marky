@@ -7,24 +7,25 @@
     <link rel="stylesheet" href="/static/styles.css">
 
 </head>
-<body>
+<body>  
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
             <script src="/static/scripts.js"></script>
             <h1>Marky Editor</h1>
             <p class="lead">Markdown to HTML converter.</p><hr>
             <textarea id="inputBox" placeholder="Enter text here to be processed..." rows="10" cols="50"></textarea><br><br>
             <div class = "button-container-1">
-                <button id="processButton" onclick = "render()">Process</button>
+                <button id="processButton" onclick = "render()">Convert To HTML</button>
                 <button id="clear-text" onclick = "clearText()">Clear Input</button><br></br>
             </div>
-            
-            <div id="preview-box" class="preview-box"
-     style="border:2px solid hsl(0, 0%, 100%); min-height:150px; width:99%; padding:12px; background:#fff;">
+            <div class="float-container">
+    <div id="preview-box" class="box float-left"></div>
+    <div id ="corrected-box" class="box float-left"></div>
+    <div style="clear: both;"></div> 
 </div>
-
-            <br><br>
+ <br><br>
             <div class="button-container-2">
-                <button id ="correct-text" onclick="correctPreviewText()" >Spell Check</button>
-                <button id = "download-text" onclick="downloadPreviewText()">Download</button>
+                <button id ="correct-text" onclick="correctPreviewText()" >Correct Spelling Errors</button>
+                <button id = "download-text" onclick="downloadCorrectedAsPdf()">Download Corrected Text as PDF</button>
             </div>
 
 

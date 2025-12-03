@@ -132,3 +132,16 @@
         @media(max-width:900px){
             .two-col{ grid-template-columns: 1fr; }
         }
+        .box {
+    border:2px 
+    solid hsl(0, 0%, 100%);
+     min-height:150px; 
+     width:40%; padding:12px; 
+     background:#fff;
+}
+
+.float-left {
+    /* The key to pulling the boxes onto the same line */
+    float: left;
+    margin-right: 10px;
+}

@@ -10,8 +10,8 @@ async function render()
             body: new URLSearchParams({ 'md': inputText })
         });
 
-        const rawHtmlText = await response.text();
-        previewBox.innerHTML = rawHtmlText;
+        previewBox.innerHTML = await response.text();
+        
                                     
 }                                        
 
@@ -21,6 +21,7 @@ async function render()
   //correcting text in the previw box      
         async function correctPreviewText() {
             const preview = document.getElementById("preview-box");
+            const corrected = document.getElementById("corrected-box");
             const html = preview.innerHTML.trim();
 
             const response = await fetch("/correct", {
@@ -29,28 +30,36 @@ async function render()
             body: html
             });
             const data = await response.json();
-            preview.innerHTML = data.corrected_html; 
+            corrected.innerHTML = data.corrected_html; 
             }
                 
 
         
        
 //downloading the preview text
-        function downloadPreviewText(){
-            const text = document.getElementById("preview-box").innerText.trim();
-            const blob = new Blob([text], {type:"text/plain"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "html_preview.txt";
-            document.body.appendChild(a);
-            a.click();
-            URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        }        
+function downloadCorrectedAsPdf() {
+    const element = document.getElementById('corrected-box');
+    const oldWidth = element.style.width;
+    element.style.width = "800px"; 
+    element.style.maxWidth = "none";
 
+    const opt = {
+        margin: 0.5,
+        filename: 'corrected_document.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+        pagebreak: { mode: 'css' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        element.style.width = oldWidth;
+        element.style.maxWidth = "";
+    });
+}    
+   
     
-     function clearText(){
+    function clearText(){
             document.getElementById("inputBox").value = "";
             document.getElementById("preview-box").innerHTML = "";
         }

@@ -19,7 +19,7 @@ async def render(md: str = Form(...)):
     return HTMLResponse(content=html, status_code=200)
 
 @app.post("/correct")
-async def correct_endpoint(body: str = Body(..., media_type="text/plain")):
-    corrected_html = corrector(body)
+async def correct_endpoint(html: str = Body(..., media_type="text/plain")):
+    corrected_html = corrector(html)
     return JSONResponse(content={"corrected_html": corrected_html})
 

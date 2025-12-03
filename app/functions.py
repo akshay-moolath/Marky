@@ -23,13 +23,17 @@ def markdown_to_html(md_text: str) -> str:
 
 def corrector(html: str) -> str:
     soup = BeautifulSoup(html, "html.parser")
+    
     for element in soup.descendants:
         if isinstance(element, NavigableString):
+            if element.strip():
                 original_text = str(element)
-                if original_text.isspace():
-                     continue
-                corrected = spellcheck(original_text)
+                corrected = " "+ spellcheck(original_text)
+                if original_text: 
+                    if original_text[0].isupper():
+                        corrected = corrected[1].upper() + corrected[2:]
                 element.replace_with(corrected)
+                
     return str(soup)
 
 def spellcheck(plain: str) -> str:
