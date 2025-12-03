@@ -1,9 +1,8 @@
-from fastapi import FastAPI, Form
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi import FastAPI, Form, Request ,Body
+from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from schemas import HTMLCorrectionRequest
-from app.functions import markdown_to_html, extract_text_from_html, spellcheck
-
+from app.functions import markdown_to_html, corrector
 
 
 app = FastAPI()
@@ -20,11 +19,7 @@ async def render(md: str = Form(...)):
     return HTMLResponse(content=html, status_code=200)
 
 @app.post("/correct")
-async def correct(data_in: HTMLCorrectionRequest):
-    return {
-  "status": "success",
-  "original_length": 500,
-  "corrected_html": "<h2>This is the *new*, clean HTML snippet.</h2>" 
-}
-
+async def correct_endpoint(body: str = Body(..., media_type="text/plain")):
+    corrected_html = corrector(body)
+    return JSONResponse(content={"corrected_html": corrected_html})
 

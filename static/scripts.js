@@ -18,15 +18,15 @@ async function render()
 
 
         
-        
+  //correcting text in the previw box      
         async function correctPreviewText() {
             const preview = document.getElementById("preview-box");
             const html = preview.innerHTML.trim();
 
             const response = await fetch("/correct", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ html: html })
+            headers: { "Content-Type": "text/plain"},
+            body: html
             });
             const data = await response.json();
             preview.innerHTML = data.corrected_html; 

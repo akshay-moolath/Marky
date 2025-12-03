@@ -1,5 +1,5 @@
 import markdown, bleach, requests, os
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -21,10 +21,16 @@ def markdown_to_html(md_text: str) -> str:
     clean = clean.replace("<a ", '<a target="_blank" rel="noopener noreferrer" ')
     return clean
 
-def extract_text_from_html(html: str) -> str:
+def corrector(html: str) -> str:
     soup = BeautifulSoup(html, "html.parser")
-    text = soup.get_text(separator="\n")
-    return text.strip()
+    for element in soup.descendants:
+        if isinstance(element, NavigableString):
+                original_text = str(element)
+                if original_text.isspace():
+                     continue
+                corrected = spellcheck(original_text)
+                element.replace_with(corrected)
+    return str(soup)
 
 def spellcheck(plain: str) -> str:
     url = "https://api.api-ninjas.com/v1/spellcheck"
