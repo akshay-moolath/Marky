@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+markdown
+bleach
+beautifulsoup4
+python-dotenv
+requests
