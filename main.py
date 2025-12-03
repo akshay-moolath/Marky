@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Form, Request ,Body
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from schemas import HTMLCorrectionRequest
 from app.functions import markdown_to_html, corrector
 
 
