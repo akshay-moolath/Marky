@@ -63,3 +63,18 @@ function downloadCorrectedAsPdf() {
             document.getElementById("inputBox").value = "";
             document.getElementById("preview-box").innerHTML = "";
         }
+
+    async function uploadFileAndView(){
+        const inputBox = document.getElementById('inputBox');
+        const input = document.getElementById('fileInput');
+        const file = input.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+
+        const res = await fetch('/upload', {
+      method: 'POST',
+      body: formData });
+      inputBox.value = await res.text();
+      
+    }

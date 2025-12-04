@@ -15,8 +15,12 @@
             <textarea id="inputBox" placeholder="Enter text here to be processed..." rows="10" cols="50"></textarea><br><br>
             <div class = "button-container-1">
                 <button id="processButton" onclick = "render()">Convert To HTML</button>
-                <button id="clear-text" onclick = "clearText()">Clear Input</button><br></br>
-            </div>
+                <button id="clear-text" onclick = "clearText()">Clear Input</button></div>
+            <input id="fileInput" type="file" />
+            <button id="upload" onclick = "uploadFileAndView()">Upload</button>
+                        
+
+                    
             <div class="float-container">
     <div id="preview-box" class="box float-left"></div>
     <div id ="corrected-box" class="box float-left"></div>

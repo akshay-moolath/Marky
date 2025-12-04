@@ -1,6 +1,9 @@
 import markdown, bleach, requests, os
 from bs4 import BeautifulSoup, NavigableString
 from dotenv import load_dotenv
+from fastapi import UploadFile, File
+import asyncio
+
 
 load_dotenv()
 spellcheck_URL = os.getenv("spellcheck_URL")
@@ -46,6 +49,12 @@ def spellcheck(plain: str) -> str:
     resp = requests.get(url, headers=headers, params=params, timeout=20)
     data = resp.json()
     return data.get("corrected", plain)
+
+async def uploadFile(file):
+    contents = await file.read()
+    text_content = contents.decode('utf-8')
+    return text_content
+
 
 ALLOWED_TAGS = list(bleach.sanitizer.ALLOWED_TAGS) + [
     "p", "pre", "code", "hr", "br", "h1", "h2", "h3", "h4", "h5", "h6",
