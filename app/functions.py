@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 from fastapi import UploadFile, File
 import asyncio
 from fastapi.responses import JSONResponse
+from PyPDF2 import PdfReader
+from io import BytesIO
+
 
 
 load_dotenv()
@@ -52,11 +55,13 @@ def spellcheck(plain: str) -> str:
     return data.get("corrected", plain)
 
 async def uploadFile(file):
+    
     contents = await file.read()
     text_content = contents.decode('utf-8')
     html = markdown_to_html(text_content)
     return JSONResponse({"html": html})
 
+        
 
 ALLOWED_TAGS = list(bleach.sanitizer.ALLOWED_TAGS) + [
     "p", "pre", "code", "hr", "br", "h1", "h2", "h3", "h4", "h5", "h6",

@@ -37,8 +37,15 @@ async function render()
         
        
 //downloading the preview text
-function downloadCorrectedAsPdf() {
-    const element = document.getElementById('corrected-box');
+function downloadPdf() {
+    const element1 = document.getElementById('preview-box');
+    const element2 = document.getElementById('corrected-box');
+    let element;
+    if (element2 !== null && element2.textContent.trim().length > 0){
+       element = element2}
+    else{
+        element = element1
+    }
     const oldWidth = element.style.width;
     element.style.width = "800px"; 
     element.style.maxWidth = "none";
