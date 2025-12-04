@@ -4,8 +4,7 @@ from dotenv import load_dotenv
 from fastapi import UploadFile, File
 import asyncio
 from fastapi.responses import JSONResponse
-from PyPDF2 import PdfReader
-from io import BytesIO
+
 
 
 
