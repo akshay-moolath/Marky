@@ -75,6 +75,7 @@ function downloadCorrectedAsPdf() {
         const res = await fetch('/upload', {
       method: 'POST',
       body: formData });
-      inputBox.value = await res.text();
+      const data = await res.json();
+      inputBox.innerHTML = data.html;
       
     }

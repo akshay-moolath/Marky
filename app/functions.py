@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup, NavigableString
 from dotenv import load_dotenv
 from fastapi import UploadFile, File
 import asyncio
+from fastapi.responses import JSONResponse
 
 
 load_dotenv()
@@ -53,7 +54,8 @@ def spellcheck(plain: str) -> str:
 async def uploadFile(file):
     contents = await file.read()
     text_content = contents.decode('utf-8')
-    return text_content
+    html = markdown_to_html(text_content)
+    return JSONResponse({"html": html})
 
 
 ALLOWED_TAGS = list(bleach.sanitizer.ALLOWED_TAGS) + [
